@@ -1,0 +1,75 @@
+[project]
+name = "plant3d"
+version = "0.1.0"
+description = "3D Gaussian Splatting + RGB/NIR (850 nm) for per-leaf NDVI of plants"
+license = "PolyForm-Noncommercial-1.0.0"
+license-files = ["LICENSE"]
+readme = "README.md"
+authors = [
+    { name = "Hiro", email = "31057166+HiroGitea@users.noreply.github.com" }
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "torch==2.14.1",
+    "gsplat==1.5.3",
+    "numpy>=2",
+    "imageio>=2.35",
+    "pillow>=11",
+    "tqdm>=4.66",
+    "tyro>=0.9",
+    "torchmetrics>=1.6",
+    "opencv-python-headless>=4.10",
+    "tifffile>=2024.8",
+    "pycolmap>=3.11",
+    "plyfile>=1.1",
+]
+
+[project.scripts]
+plant3d = "plant3d.cli:main"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+    "ipywidgets>=8.1.9",
+    "jupyterlab>=4.6.4",
+    "matplotlib>=3.11.2",
+    "pandas>=3.0.6",
+    "plotly>=7.1.0",
+    "pytest>=8",
+    "ruff>=0.8",
+    "torchvision>=0.29.1",
+    "transformers>=5.19.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+# --- torch: CUDA 13.0 wheels (RTX 5070 Ti = Blackwell sm_120, needs CUDA >= 12.8) ---
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu130" }
+torchvision = { index = "pytorch-cu130" }
+# gsplat 1.5.3 sdist + one-line patch (nvcc -std=c++17 -> c++20, required by torch>=2.14 headers).
+# See third_party/gsplat-1.5.3-cxx20.patch
+gsplat = { path = "third_party/gsplat", editable = false }
+
+# --- gsplat: official prebuilt wheels stop at torch 2.4, so build the CUDA ext locally ---
+[tool.uv.extra-build-dependencies]
+gsplat = [{ requirement = "torch", match-runtime = true }, "ninja", "setuptools", "wheel"]
+
+[tool.uv.extra-build-variables]
+gsplat = { TORCH_CUDA_ARCH_LIST = "12.0", CUDA_HOME = "/opt/cuda", MAX_JOBS = "8" }
+
+# Path source has no static metadata; declare it so `match-runtime` can pin the build-time torch.
+[[tool.uv.dependency-metadata]]
+name = "gsplat"
+version = "1.5.3"
+requires-dist = ["ninja", "numpy", "jaxtyping", "rich>=12", "torch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]  # third_party/gsplat ships its own tests; don't collect them

@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "如在论文、报告或其他作品中使用本项目的代码或结果，请按以下信息引用。"
+type: software
+title: "plant3d: Multispectral 3D Gaussian Splatting of Plants for Per-Leaf Vegetation Indices"
+authors:
+  - alias: Hiro
+version: 0.1.0
+date-released: 2026-10-11
+license: PolyForm-Noncommercial-1.0.0
+keywords:
+  - 3D Gaussian Splatting
+  - multispectral imaging
+  - NDVI
+  - plant phenotyping

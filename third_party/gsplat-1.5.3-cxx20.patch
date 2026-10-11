@@ -1,0 +1,11 @@
+--- setup.py.orig	2026-10-11 12:30:58.554103309 +0900
++++ setup.py	2026-10-11 12:30:58.556881958 +0900
+@@ -69,7 +69,7 @@
+ 
+     nvcc_flags = os.getenv("NVCC_FLAGS", "")
+     nvcc_flags = [] if nvcc_flags == "" else nvcc_flags.split(" ")
+-    nvcc_flags += ["-O3", "--use_fast_math", "-std=c++17"]
++    nvcc_flags += ["-O3", "--use_fast_math", "-std=c++20"]
+     if LINE_INFO:
+         nvcc_flags += ["-lineinfo"]
+     if torch.version.hip:
